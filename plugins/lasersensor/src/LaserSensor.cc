@@ -20,7 +20,9 @@
 
 
 GZ_REGISTER_SENSOR_PLUGIN(gazebo::GazeboYarpLaserSensor)
-
+namespace {
+    YARP_LOG_COMPONENT(GAZEBOLASER, "gazebo-yarp-plugins.plugins.LaserSensor")
+}
 namespace gazebo {
 
 GazeboYarpLaserSensor::GazeboYarpLaserSensor() : SensorPlugin(), m_iWrap(0)
@@ -41,13 +43,13 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
     yarp::os::Network::init();
     if (!yarp::os::Network::checkNetwork(GazeboYarpPlugins::yarpNetworkInitializationTimeout))
     {
-       yError() << "GazeboYarpLaserSensor::Load error: yarp network does not seem to be available, is the yarpserver running?";
+       yCError(GAZEBOLASER) << "GazeboYarpLaserSensor::Load error: yarp network does not seem to be available, is the yarpserver running?";
        return;
     }
 
     if (!_sensor)
     {
-        gzerr << "GazeboYarpLaserSensor plugin requires a LaserSensor.\n";
+        yCError(GAZEBOLASER) << "GazeboYarpLaserSensor plugin requires a LaserSensor.\n";
         return;
     }
 
@@ -64,7 +66,7 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
 
     if (!configuration_loaded)
     {
-        yError() << "GazeboYarpLaserSensor::Load error: unabble to load configuration?";
+        yCError(GAZEBOLASER) << "GazeboYarpLaserSensor::Load error: unabble to load configuration?";
         return;
     };
 
@@ -78,7 +80,6 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
     GazeboYarpPlugins::Handler::getHandler()->setSensor(_sensor.get());
 
     driver_properties.put(YarpLaserSensorScopedName.c_str(), m_sensorName.c_str());
-        
     //Open the wrapper
     wrapper_properties.put("device","Rangefinder2DWrapper");
     if( m_laserWrapper.open(wrapper_properties) ) {
@@ -94,7 +95,7 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
     if( m_laserDriver.open(driver_properties) ) {
     } else 
     {
-        yError()<<"GazeboYarpLaserSensor Plugin failed: error in opening yarp driver";
+        yCError(GAZEBOLASER)<<"GazeboYarpLaserSensor Plugin failed: error in opening yarp driver";
         return;
     }
 
@@ -103,7 +104,7 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
 
     if( !m_laserWrapper.view(m_iWrap) )
     {
-        yError() << "GazeboYarpLaserSensor : error in loading wrapper" ;
+        yCError(GAZEBOLASER) << "GazeboYarpLaserSensor : error in loading wrapper" ;
         return;
     }
 
@@ -112,7 +113,7 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
     if( m_iWrap->attachAll(driver_list) ) {
     } else
     {
-        yError() << "GazeboYarpLaserSensor : error in connecting wrapper and device " ;
+        yCError(GAZEBOLASER) << "GazeboYarpLaserSensor : error in connecting wrapper and device " ;
     }
 
     //Register the device with the given name
@@ -125,8 +126,9 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
     }
     else if(!driver_properties.check("yarpDeviceName"))
     {
-        scopedDeviceName = sensorName + "::" + driver_list[0]->key;
-    }
+		yCError(GAZEBOLASER)<<"failed getting yarpDeviceName parameter value";
+        return;
+	}
     else
     {
         scopedDeviceName = sensorName + "::" + driver_properties.find("yarpDeviceName").asString();
@@ -135,10 +137,10 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
 
     if(!GazeboYarpPlugins::Handler::getHandler()->setDevice(scopedDeviceName, &m_laserDriver))
     {
-        yError()<<"GazeboYarpLaserSensor: failed setting scopedDeviceName(=" << scopedDeviceName << ")";
+        yCError(GAZEBOLASER)<<"GazeboYarpLaserSensor: failed setting scopedDeviceName(=" << scopedDeviceName << ")";
         return;
     }
-    yInfo() << "Registered YARP device with instance name:" << scopedDeviceName;
+    yCInfo(GAZEBOLASER) << "Registered YARP device with instance name:" << scopedDeviceName;
 }
 
 } // namespace gazebo
