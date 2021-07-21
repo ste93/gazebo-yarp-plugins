@@ -21,7 +21,7 @@
 
 GZ_REGISTER_SENSOR_PLUGIN(gazebo::GazeboYarpLaserSensor)
 namespace {
-    YARP_LOG_COMPONENT(GAZEBOLASER, "gazebo-yarp-plugins.plugins.LaserSensor")
+    YARP_LOG_COMPONENT(GAZEBOLASER, "gazebo-yarp-plugins.plugins.GazeboYarpLaserSensor")
 }
 namespace gazebo {
 
@@ -43,13 +43,13 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
     yarp::os::Network::init();
     if (!yarp::os::Network::checkNetwork(GazeboYarpPlugins::yarpNetworkInitializationTimeout))
     {
-       yCError(GAZEBOLASER) << "GazeboYarpLaserSensor::Load error: yarp network does not seem to be available, is the yarpserver running?";
+       yCError(GAZEBOLASER) << "Load error: yarp network does not seem to be available, is the yarpserver running?";
        return;
     }
 
     if (!_sensor)
     {
-        yCError(GAZEBOLASER) << "GazeboYarpLaserSensor plugin requires a LaserSensor.\n";
+        yCError(GAZEBOLASER) << "the plugin requires a LaserSensor.\n";
         return;
     }
 
@@ -57,7 +57,7 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
 
     // Add my gazebo device driver to the factory.
     ::yarp::dev::Drivers::factory().add(new ::yarp::dev::DriverCreatorOf< ::yarp::dev::GazeboYarpLaserSensorDriver>
-                                      ("gazebo_laserSensor", "Rangefinder2DWrapper", "GazeboYarpLaserSensorDriver"));
+                                      ("gazebo_laserSensor", "", "GazeboYarpLaserSensorDriver"));
 
     //Getting .ini configuration file from sdf
     ::yarp::os::Property wrapper_properties;
@@ -66,13 +66,9 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
 
     if (!configuration_loaded)
     {
-        yCError(GAZEBOLASER) << "GazeboYarpLaserSensor::Load error: unabble to load configuration?";
+        yCError(GAZEBOLASER) << "Load error: unabble to load configuration?";
         return;
     };
-
-
-    ///< \todo TODO handle in a better way the parameters that are for the wrapper and the one that are for driver
-    wrapper_properties = driver_properties;
 
     m_sensorName = _sensor->ScopedName();
 
@@ -87,25 +83,8 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
     if( m_laserDriver.open(driver_properties) ) {
     } else 
     {
-        yCError(GAZEBOLASER)<<"GazeboYarpLaserSensor Plugin failed: error in opening yarp driver";
+        yCError(GAZEBOLASER)<<"Plugin failed: error in opening yarp driver";
         return;
-    }
-
-    //Attach the driver to the wrapper
-    ::yarp::dev::PolyDriverList driver_list;
-
-    if( !m_laserWrapper.view(m_iWrap) )
-    {
-        yCError(GAZEBOLASER) << "GazeboYarpLaserSensor : error in loading wrapper" ;
-        return;
-    }
-
-    driver_list.push(&m_laserDriver, "lasersensor");
-
-    if( m_iWrap->attachAll(driver_list) ) {
-    } else
-    {
-        yCError(GAZEBOLASER) << "GazeboYarpLaserSensor : error in connecting wrapper and device " ;
     }
 
     //Register the device with the given name
@@ -113,7 +92,7 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
     std::string scopedDeviceName;
     if(driver_properties.check("deviceId"))
     {
-        yWarning() << "GazeboYarpLaserSensor: deviceId parameter has been deprecated. Please use yarpDeviceName instead";
+        yWarning() << "deviceId parameter has been deprecated. Please use yarpDeviceName instead";
         scopedDeviceName = sensorName + "::" + driver_properties.find("deviceId").asString();
     }
     else if(!driver_properties.check("yarpDeviceName"))
@@ -129,7 +108,7 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
 
     if(!GazeboYarpPlugins::Handler::getHandler()->setDevice(scopedDeviceName, &m_laserDriver))
     {
-        yCError(GAZEBOLASER)<<"GazeboYarpLaserSensor: failed setting scopedDeviceName(=" << scopedDeviceName << ")";
+        yCError(GAZEBOLASER)<<"failed setting scopedDeviceName(=" << scopedDeviceName << ")";
         return;
     }
     yCInfo(GAZEBOLASER) << "Registered YARP device with instance name:" << scopedDeviceName;
