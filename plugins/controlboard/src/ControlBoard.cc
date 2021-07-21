@@ -98,8 +98,7 @@ GZ_REGISTER_MODEL_PLUGIN(GazeboYarpControlBoard)
         yarp::os::Bottle wrapper_group = m_parameters.findGroup("WRAPPER");
         if(wrapper_group.isNull()) 
         {
-            yCError(GAZEBOCONTROLBOARD) <<"[WRAPPER] group not found in config file";
-            return;
+            yCDebug(GAZEBOCONTROLBOARD) <<"[WRAPPER] group not found in config file";
         }
 
         if(m_parameters.check("ROS"))
@@ -108,18 +107,17 @@ GZ_REGISTER_MODEL_PLUGIN(GazeboYarpControlBoard)
             ROS = std::string ("(") + m_parameters.findGroup("ROS").toString() + std::string (")");
             wrapper_group.append(yarp::os::Bottle(ROS));
         }
-
-        m_wrapper.open(wrapper_group);
-
+		if (!wrapper_group.isNull()){
+			m_wrapper.open(wrapper_group);
+		}
+		
         if (!m_wrapper.isValid()) {
             yCError(GAZEBOCONTROLBOARD) <<"wrapper did not open, load failed.";
             m_wrapper.close();
-            return;
         }
 
         if (!m_wrapper.view(m_iWrap)) {
             yCError(GAZEBOCONTROLBOARD) <<"wrapper interface not found, load failed.";
-            return;
         }
 
         yarp::os::Bottle *netList = wrapper_group.find("networks").asList();
@@ -127,7 +125,6 @@ GZ_REGISTER_MODEL_PLUGIN(GazeboYarpControlBoard)
         if (netList->isNull()) {
             yCError(GAZEBOCONTROLBOARD) <<"net list to attach to was not found, load failed.";
             m_wrapper.close();
-            return;
         }
 
         yarp::os::Bottle driver_group;

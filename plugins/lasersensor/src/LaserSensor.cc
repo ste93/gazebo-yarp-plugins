@@ -80,14 +80,6 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
     GazeboYarpPlugins::Handler::getHandler()->setSensor(_sensor.get());
 
     driver_properties.put(YarpLaserSensorScopedName.c_str(), m_sensorName.c_str());
-    //Open the wrapper
-    wrapper_properties.put("device","Rangefinder2DWrapper");
-    if( m_laserWrapper.open(wrapper_properties) ) {
-    } else
-    {
-        yError()<<"GazeboYarpLaserSensor Plugin failed: error in opening yarp driver wrapper";
-        return;
-    }
 
     //Open the driver
     //Force the device to be of type "gazebo_forcetorque" (it make sense? probably yes)
