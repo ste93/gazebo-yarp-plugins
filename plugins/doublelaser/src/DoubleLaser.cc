@@ -203,7 +203,7 @@ GZ_REGISTER_MODEL_PLUGIN(GazeboYarpDoubleLaser)
             yCError(GAZEBODOUBLELASER) << "cannot find LASERFRONT-CFG.sensorName parameter";
             return;
         }
-         yarp::os::Bottle &back_name = m_parameters.findGroup("LASERBACK-CFG").findGroup("sensorName");
+        yarp::os::Bottle &back_name = m_parameters.findGroup("LASERBACK-CFG").findGroup("sensorName");
         if(back_name.isNull())
         {
             yCError(GAZEBODOUBLELASER) << "cannot find LASERBACK-CFG.sensorName parameter";
@@ -275,10 +275,7 @@ GZ_REGISTER_MODEL_PLUGIN(GazeboYarpDoubleLaser)
             yCError(GAZEBODOUBLELASER)<<"failed getting yarpDeviceName parameter value";
             return;
         }
-        else
-        {
-            scopedDeviceName = robotName + "::" + m_parameters.find("yarpDeviceName").asString();
-        }
+        scopedDeviceName = robotName + "::" + m_parameters.find("yarpDeviceName").asString();
 
         if(!GazeboYarpPlugins::Handler::getHandler()->setDevice(scopedDeviceName, &m_driver_doublelaser))
         {
