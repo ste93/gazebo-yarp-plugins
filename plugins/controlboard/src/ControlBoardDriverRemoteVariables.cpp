@@ -6,8 +6,13 @@
 
 #include "ControlBoardDriver.h"
 #include <gazebo/physics/Joint.hh>
+#include <yarp/os/LogStream.h>
+#include <yarp/os/LogComponent.h>
 
 using namespace yarp::dev;
+namespace {
+    YARP_LOG_COMPONENT(GAZEBOCONTROLBOARD, "gazebo-yarp-plugins.plugins.GazeboYarpControlBoard")
+}
 
 bool GazeboYarpControlBoardDriver::getRemoteVariablesList(yarp::os::Bottle* listOfKeys)
 {
@@ -126,7 +131,7 @@ bool GazeboYarpControlBoardDriver::getRemoteVariable(std::string key, yarp::os::
         yarp::os::Bottle& r = val.addList(); for (size_t i = 0; i< m_numberOfJoints; i++) { r.addFloat64(m_velocity_watchdog[i]->getDuration()); }
         return true;
     }
-    yWarning("getRemoteVariable(): Unknown variable %s", key.c_str());
+    yCWarning(GAZEBOCONTROLBOARD,"getRemoteVariable(): Unknown variable %s", key.c_str());
     return false;
 }
 
@@ -136,7 +141,7 @@ bool GazeboYarpControlBoardDriver::setRemoteVariable(std::string key, const yarp
     yarp::os::Bottle* bval = val.get(0).asList();
     if (bval == 0)
     {
-        yWarning("setRemoteVariable(): Protocol error %s", s1.c_str());
+        yCWarning(GAZEBOCONTROLBOARD,"setRemoteVariable(): Protocol error %s", s1.c_str());
         return false;
     }
 
@@ -279,7 +284,7 @@ bool GazeboYarpControlBoardDriver::setRemoteVariable(std::string key, const yarp
         return true;
     }
 
-    yWarning("setRemoteVariable(): Unknown variable %s", key.c_str());
+    yCWarning(GAZEBOCONTROLBOARD,"setRemoteVariable(): Unknown variable %s", key.c_str());
     return false;
 }
 

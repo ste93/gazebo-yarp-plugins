@@ -20,7 +20,9 @@
 using namespace yarp::os;
 using namespace yarp::sig;
 using namespace yarp::dev;
-
+namespace {
+    YARP_LOG_COMPONENT(GAZEBOCONTROLBOARD, "gazebo-yarp-plugins.plugins.GazeboYarpControlBoard")
+}
 void Watchdog::reset()
 {
     m_lastUpdate=yarp::os::Time::now();
@@ -265,7 +267,7 @@ double MinJerkTrajectoryGenerator::p_computeTrajectoryStep()
         target = m_xf;
         delta_target = target - m_prev_a;
         m_prev_a = target;
-        //yDebug()<<"mdone" << target;
+        //yCDebug(GAZEBOCONTROLBOARD)<<"mdone" << target;
         return delta_target;
     }
 
@@ -277,7 +279,7 @@ double MinJerkTrajectoryGenerator::p_computeTrajectoryStep()
         target = m_x0;
         delta_target = target - m_prev_a;
         m_prev_a = target;
-        //yDebug()<<"first" ;
+        //yCDebug(GAZEBOCONTROLBOARD)<<"first" ;
         return delta_target;
     }
     else if (m_cur_t < 1.0 - m_step)
@@ -292,11 +294,11 @@ double MinJerkTrajectoryGenerator::p_computeTrajectoryStep()
 
         delta_target = target - m_prev_a;
         m_prev_a = target;
-        //yDebug()<< delta_target;
+        //yCDebug(GAZEBOCONTROLBOARD)<< delta_target;
         return delta_target;
     }
 
-    //yDebug()<<"last";
+    //yCDebug(GAZEBOCONTROLBOARD)<<"last";
     m_trajectory_complete = true;
     target =m_xf;
 
@@ -320,7 +322,7 @@ double MinJerkTrajectoryGenerator::p_computeTrajectory()
     {
         target = m_xf;
         m_prev_a = target;
-        //yDebug()<<"mdone" << target;
+        //yCDebug(GAZEBOCONTROLBOARD)<<"mdone" << target;
         return target;
     }
 
@@ -331,7 +333,7 @@ double MinJerkTrajectoryGenerator::p_computeTrajectory()
 
         target = m_x0;
         m_prev_a = target;
-        //yDebug()<<"first" ;
+        //yCDebug(GAZEBOCONTROLBOARD)<<"first" ;
         return target;
     }
     else if (m_cur_t < 1.0 - m_step)
@@ -345,11 +347,11 @@ double MinJerkTrajectoryGenerator::p_computeTrajectory()
         m_cur_step ++;
 
         m_prev_a = target;
-        //yDebug()<< target;
+        //yCDebug(GAZEBOCONTROLBOARD)<< target;
         return target;
     }
 
-    //yDebug()<<"last";
+    //yCDebug(GAZEBOCONTROLBOARD)<<"last";
     m_trajectory_complete = true;
     target =m_xf;
     return target;
@@ -427,7 +429,7 @@ double ConstSpeedTrajectoryGenerator::p_computeTrajectoryStep()
         step = (m_xf - m_computed_reference);
     }
 
-    //yDebug() << step;
+    //yCDebug(GAZEBOCONTROLBOARD) << step;
     return step;
 }
 
@@ -463,7 +465,7 @@ double ConstSpeedTrajectoryGenerator::p_computeTrajectory()
         }
     }
 
-    //yDebug() << m_computed_reference;
+    //yCDebug(GAZEBOCONTROLBOARD) << m_computed_reference;
     return m_computed_reference;
 }
 

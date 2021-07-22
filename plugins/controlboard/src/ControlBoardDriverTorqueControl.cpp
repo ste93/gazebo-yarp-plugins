@@ -11,7 +11,9 @@
 
 
 using namespace yarp::dev;
-
+namespace {
+    YARP_LOG_COMPONENT(GAZEBOCONTROLBOARD, "gazebo-yarp-plugins.plugins.GazeboYarpControlBoard")
+}
 bool GazeboYarpControlBoardDriver::setRefTorque(int j, double t)
 {
     if (!checkIfTorqueIsValid(t))
@@ -136,7 +138,7 @@ bool GazeboYarpControlBoardDriver::checkIfTorqueIsValid(double torque) const
 {
     if (std::isnan(torque) || std::isinf(torque))
     {
-        yError() << "GazeboYarpControlBoard : controlBoard  invalid torque value:" << torque;
+        yCError(GAZEBOCONTROLBOARD) << "GazeboYarpControlBoard : controlBoard  invalid torque value:" << torque;
         return false;
     }
     return true;
