@@ -83,9 +83,7 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
         
     //Open the wrapper
     wrapper_properties.put("device","Rangefinder2DWrapper");
-    if( m_laserWrapper.open(wrapper_properties) ) {
-    } else
-    {
+    if( !m_laserWrapper.open(wrapper_properties) ) {
         yCError(GAZEBOLASER)<<"Plugin failed: error in opening yarp driver wrapper";
         return;
     }
@@ -93,9 +91,7 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
     //Open the driver
     //Force the device to be of type "gazebo_forcetorque" (it make sense? probably yes)
     driver_properties.put("device","gazebo_laserSensor");
-    if( m_laserDriver.open(driver_properties) ) {
-    } else 
-    {
+    if(!m_laserDriver.open(driver_properties) ) {
         yCError(GAZEBOLASER)<<"Plugin failed: error in opening yarp driver";
         return;
     }
@@ -111,16 +107,14 @@ void GazeboYarpLaserSensor::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sd
 
     driver_list.push(&m_laserDriver, "lasersensor");
 
-    if( m_iWrap->attachAll(driver_list) ) {
-    } else
-    {
+    if( !m_iWrap->attachAll(driver_list) ) {
         yCError(GAZEBOLASER) << "GazeboYarpLaserSensor : error in connecting wrapper and device " ;
     }
 
     //Register the device with the given name
     std::string sensorName = _sensor->ScopedName();
     std::string scopedDeviceName;
-    if(driver_properties.check("deviceId"))
+    if( driver_properties.check("deviceId") )
     {
         yCWarning(GAZEBOLASER) << "deviceId parameter has been deprecated. Please use yarpDeviceName instead";
         scopedDeviceName = sensorName + "::" + driver_properties.find("deviceId").asString();
