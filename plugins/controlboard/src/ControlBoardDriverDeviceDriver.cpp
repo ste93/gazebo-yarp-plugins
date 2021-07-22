@@ -13,7 +13,9 @@
 using namespace yarp::dev;
 using namespace gazebo;
 
-
+namespace {
+    YARP_LOG_COMPONENT(GAZEBOCONTROLBOARD, "gazebo-yarp-plugins.plugins.GazeboYarpControlBoard")
+}
 bool GazeboYarpControlBoardDriver::open(yarp::os::Searchable& config)
 {
     m_pluginParameters.fromString(config.toString().c_str());
@@ -24,7 +26,7 @@ bool GazeboYarpControlBoardDriver::open(yarp::os::Searchable& config)
 
     m_robot = GazeboYarpPlugins::Handler::getHandler()->getRobot(robotName);
     if(!m_robot) {
-        yError() << "GazeboYarpControlBoardDriver error: robot was not found";
+        yCError(GAZEBOCONTROLBOARD) << "GazeboYarpControlBoardDriver error: robot was not found";
         return false;
     }
 

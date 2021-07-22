@@ -15,6 +15,9 @@
 #include <yarp/os/LogStream.h>
 
 using namespace yarp::dev;
+namespace {
+    YARP_LOG_COMPONENT(GAZEBOCONTROLBOARD, "gazebo-yarp-plugins.plugins.GazeboYarpControlBoard")
+}
 
 void GazeboYarpControlBoardDriver::resetAllPidsForJointAtIndex(int j)
 {
@@ -65,7 +68,7 @@ bool GazeboYarpControlBoardDriver::setControlMode(const int j, const int mode)
           || mode == VOCAB_CM_CURRENT
           || mode == VOCAB_CM_IDLE
           || mode == VOCAB_CM_FORCE_IDLE)) {
-        yWarning() << "request control mode "
+        yCWarning(GAZEBOCONTROLBOARD) << "request control mode "
         << yarp::os::Vocab32::decode(mode) << " that is not supported by "
         << " gazebo_yarp_controlboard plugin.";
         return false;

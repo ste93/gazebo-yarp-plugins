@@ -9,7 +9,9 @@
 
 
 using namespace yarp::dev;
-
+namespace {
+    YARP_LOG_COMPONENT(GAZEBOCONTROLBOARD, "gazebo-yarp-plugins.plugins.GazeboYarpControlBoard")
+}
 bool GazeboYarpControlBoardDriver::positionMove(int j, double ref) //WORKS
 {
     if (j >= 0 && static_cast<size_t>(j) < m_numberOfJoints)
@@ -332,7 +334,7 @@ bool GazeboYarpControlBoardDriver::setPosition(int j, double ref)
             return true;
         }
     } else {
-        yError() << "gazebo_yarp_controlboard: you tried to call setPosition " <<
+        yCError(GAZEBOCONTROLBOARD) << "gazebo_yarp_controlboard: you tried to call setPosition " <<
         "for a joint that is not in POSITION_DIRECT control mode.";
     }
     return false;
