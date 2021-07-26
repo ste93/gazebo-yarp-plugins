@@ -21,7 +21,7 @@ using namespace yarp::sig;
 using namespace yarp::dev;
 
 namespace {
-    YARP_LOG_COMPONENT(GAZEBOCONTROLBOARD, "gazebo-yarp-plugins.plugins.GazeboYarpControlBoard")
+    YARP_LOG_COMPONENT(GAZEBOCONTROLBOARD, "gazebo-yarp-plugins.plugins.GazeboYarpControlBoard ControlBoardDriver")
 }
 
 GazeboYarpControlBoardDriver::GazeboYarpControlBoardDriver() : m_deviceName(""), m_initTime(true) {}
@@ -1313,6 +1313,7 @@ bool GazeboYarpControlBoardDriver::setPIDsForGroup_IMPEDANCE(std::vector<std::st
 
 bool GazeboYarpControlBoardDriver::findMotorControlGroup(yarp::os::Bottle& motorControlGroup_bot) const
 {
+    #ifndef USE_NEW_WRAPPERS
     if (!m_pluginParameters.check("WRAPPER"))
     {
         yCError(GAZEBOCONTROLBOARD)<<"Missing WRAPPER group";
@@ -1324,11 +1325,12 @@ bool GazeboYarpControlBoardDriver::findMotorControlGroup(yarp::os::Bottle& motor
         yCError(GAZEBOCONTROLBOARD)<<"Missing networks group";
         return false;
     }
-
     yarp::os::Bottle& name_bot = m_pluginParameters.findGroup("WRAPPER").findGroup("networks");
     std::string name = name_bot.get(1).toString();
 
-    motorControlGroup_bot = m_pluginParameters.findGroup(name);
+    #endif
+    motorControlGroup_bot.fromString(m_pluginParameters.toString());
+
     return true;
 }
 
